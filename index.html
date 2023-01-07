@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <script src="./vue.js"></script>
+  <link href="https://fonts.googleapis.com/css?family=Noto+Serif:400,400i,700" rel="stylesheet">
+  <link rel="stylesheet" href="./style.css">
+  <title>Techno</title>
+</head>
+
+<body>
+  <div id="app">
+    <header @click="carrinhoModalAtivo = !carrinhoModalAtivo" class="header">
+      <img class="logo" src="./assets/techno.svg" alt="Techno">
+      <div class="carrinho_menu">{{currencyFormatter(precoTotal, 'BRL')}} | {{qtdProdutos}}</div>
+    </header>
+
+    <section class="produtos">
+      <div @click="abrirModal(produto)" v-for="(produto, key) in produtos" class="produto">
+        <img :src="produto.img" alt="produto.id" :key="produto.id" class="produto_img">
+        <div>
+          <span class="produto_preco">{{currencyFormatter(produto.preco, 'BRL')}}</span>
+          <h2 class="produto_titulo">{{produto.nome}}</h2>
+        </div>
+      </div>
+    </section>
+
+    <!-- Modais -->
+    <section @click="fecharModal" id="carrinhoModalSection" :class="[carrinho_modal, {ativo : carrinhoModalAtivo}]">
+      <div class="carrinho_container">
+        <button id="fecharCarrinhoModalBtn" @click="fecharModal" class="carrinho_fechar">X</button>
+        <h2 class="carrinho_titulo">Carrinho</h2>
+        <ul class="carrinho_lista">
+          <li class="carrinho_item" v-for="(produto, key) in carrinho" :key="key">
+            <p>{{produto.id.toUpperCase()}}</p>
+            <p>{{currencyFormatter(produto.preco, 'BRL')}}</p>
+            <button @click="removerItemCarrinho(key, produto)">X</button>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <section @click="fecharModal" id="produtoModalSection" v-if="produto != 0" :class="[modal]">
+      <div class="modal_container">
+        <div class="modal_img">
+          <img :src="produto.img" :alt="produto.id">
+        </div>
+        <div class="modal_dados">
+          <button id="fecharModalBtn" class="modal_fechar">X</button>
+          <span class="produto_preco">{{currencyFormatter(produto.preco, 'BRL')}}</span>
+          <h2 class="produto_titulo">{{produto.nome}}</h2>
+          <p>{{produto.descricao}}</p>
+          <button v-if="produto.estoque > 0" @click="addCarrinho(produto)" :class="[modal_btn]">Adicionar Item</button>
+          <button v-else="produto.estoque > 0" disabled :class="modal_btn_disabled">Produto esgotado</button>
+        </div>
+        <div class="avaliacoes">
+          <h2 class="avaliacoes_subtitulo">Avaliações</h2>
+          <ul>
+            <li class="avaliacao" v-for="(prop, key, index) in produto.reviews">
+              <p class="avaliacao_descricao">{{prop.descricao}}
+              </p>
+              <p class="avaliacao_usuario">{{prop.nome}} | {{prop.estrelas}} estrelas</p>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Alertas -->
+    <div class="alerta" :class="{ativo: alertaAtivo}">
+      <p class="alerta_mensagem">{{mensagemAlerta}}</p>
+    </div>
+  </div>
+
+  <script src="./app.js"></script>
+</body>
+
+</html>

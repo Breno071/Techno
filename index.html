@@ -13,9 +13,9 @@
 
 <body>
   <div id="app">
-    <header @click="carrinhoModalAtivo = !carrinhoModalAtivo" class="header">
+    <header class="header">
       <img class="logo" src="./assets/techno.svg" alt="Techno">
-      <div class="carrinho_menu">{{currencyFormatter(precoTotal, 'BRL')}} | {{qtdProdutos}}</div>
+      <div @click="carrinhoModalAtivo = !carrinhoModalAtivo" class="carrinho_menu">{{currencyFormatter(precoTotal, 'BRL')}} | {{qtdProdutos}}</div>
     </header>
 
     <section class="produtos">

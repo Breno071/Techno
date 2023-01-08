@@ -15,7 +15,7 @@
   <div id="app">
     <header class="header">
       <img class="logo" src="./assets/techno.svg" alt="Techno">
-      <div @click="carrinhoModalAtivo = !carrinhoModalAtivo" class="carrinho_menu">{{currencyFormatter(precoTotal, 'BRL')}} | {{qtdProdutos}}</div>
+      <div @click="carrinhoModalAtivo = !carrinhoModalAtivo" class="carrinho_menu">{{currencyFormatter(precoTotal, 'BRL')}} | {{carrinho.length}}</div>
     </header>
 
     <section class="produtos">
@@ -54,7 +54,7 @@
           <h2 class="produto_titulo">{{produto.nome}}</h2>
           <p>{{produto.descricao}}</p>
           <button v-if="produto.estoque > 0" @click="addCarrinho(produto)" :class="[modal_btn]">Adicionar Item</button>
-          <button v-else="produto.estoque > 0" disabled :class="modal_btn_disabled">Produto esgotado</button>
+          <button v-else disabled :class="modal_btn_disabled">Produto esgotado</button>
         </div>
         <div class="avaliacoes">
           <h2 class="avaliacoes_subtitulo">Avaliações</h2>

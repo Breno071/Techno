@@ -5,7 +5,6 @@ const vue = new Vue({
     carrinho:[],
     produto:0,
     precoTotal:0,
-    qtdProdutos:0,
     carrinhoModalAtivo:false,
     alertaAtivo: false,
     modal:'modal',
@@ -17,7 +16,6 @@ const vue = new Vue({
   methods:{
     removerItemCarrinho(index, produto){
       this.carrinho.splice(index,1)
-      this.qtdProdutos--;
       this.precoTotal -= produto.preco
       //this.produto.estoque++
     },
@@ -32,7 +30,6 @@ const vue = new Vue({
     },
     addCarrinho(produto){
       this.carrinho.push(produto);
-      this.qtdProdutos++;
       this.precoTotal += produto.preco
       this.produto.estoque--;
       this.mostrarAlerta(`${produto.id.toUpperCase()} adicionado ao carrinho`)
@@ -46,23 +43,30 @@ const vue = new Vue({
     },
     async abrirModal(produto){
       await fetch(`./api/produtos/${produto.id}/dados.json`)
-        .then(response => response.json())
-        .then(response => this.produto = response)
-        .catch(error => console.log(error))
-        window.scrollTo(0,0)
+      .then(response => response.json())
+      .then(response => this.produto = response)
+      .catch(error => console.log(error))
+      window.scrollTo(0,0)
+      this.produto.estoque -= this.carrinho.filter(x => x.id == produto.id).length
     },
     fecharModal(event){
       const produtoModal = ['produtoModalSection', 'fecharModalBtn']
       const carrinhoModal = ['carrinhoModalSection', 'fecharCarrinhoModalBtn']
-      if(produtoModal.includes(event.target.id)){
-        this.produto = 0
-      }
-      else if(carrinhoModal.includes(event.target.id)){
-        this.carrinhoModalAtivo = false
-      }
+
+      if(produtoModal.includes(event.target.id)) this.produto = 0
+      else if(carrinhoModal.includes(event.target.id)) this.carrinhoModalAtivo = false
+    }
+  },
+  watch:{
+    carrinho(){
+      localStorage.carrinho = JSON.stringify(this.carrinho)
     }
   },
   created: async function(){
+    this.carrinho = JSON.parse(localStorage.carrinho)
+    for (let i = 0; i < this.carrinho.length; i++) {
+      this.precoTotal += this.carrinho[i].preco;
+    }
     await fetch('./api/produtos.json')
       .then(result => result.json())
       .then(result => this.produtos = result)

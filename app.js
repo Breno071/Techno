@@ -17,7 +17,6 @@ const vue = new Vue({
     removerItemCarrinho(index, produto){
       this.carrinho.splice(index,1)
       this.precoTotal -= produto.preco
-      //this.produto.estoque++
     },
     mostrarAlerta(mensagem){
       this.alertaAtivo = false
@@ -48,6 +47,7 @@ const vue = new Vue({
       .catch(error => console.log(error))
       window.scrollTo(0,0)
       this.produto.estoque -= this.carrinho.filter(x => x.id == produto.id).length
+      history.pushState(null, null,'#' + produto.id)
     },
     fecharModal(event){
       const produtoModal = ['produtoModalSection', 'fecharModalBtn']
@@ -55,6 +55,18 @@ const vue = new Vue({
 
       if(produtoModal.includes(event.target.id)) this.produto = 0
       else if(carrinhoModal.includes(event.target.id)) this.carrinhoModalAtivo = false
+
+      window.location.hash = ''
+    },
+    verificarRota(){
+      const hash = window.location.hash.replace("#", "");
+      if(hash) {
+        const produto = {
+          id:hash
+        }
+        this.abrirModal(produto)
+      }
+      
     }
   },
   watch:{
@@ -63,7 +75,8 @@ const vue = new Vue({
     }
   },
   created: async function(){
-    this.carrinho = JSON.parse(localStorage.carrinho)
+    if(localStorage.carrinho != undefined)
+      this.carrinho = JSON.parse(localStorage.carrinho)
     for (let i = 0; i < this.carrinho.length; i++) {
       this.precoTotal += this.carrinho[i].preco;
     }
@@ -72,5 +85,6 @@ const vue = new Vue({
       .then(result => this.produtos = result)
       .catch(error => console.log(error))
       .finally('Fetch finalizado com sucesso')
+      this.verificarRota()
   }
 });
